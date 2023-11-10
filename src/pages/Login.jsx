@@ -8,12 +8,15 @@ import {
   ImageBackground,
 } from "react-native";
 import { Formik } from "formik";
+import { LinearGradient } from "expo-linear-gradient";
+import MaskedView from "@react-native-masked-view/masked-view";
 
 const initialValues = {
   user: "",
   password: "",
 };
 
+const image = require("../../assets/background.jpg");
 export default function LogInPage() {
   return (
     <Formik
@@ -23,29 +26,76 @@ export default function LogInPage() {
       {({ handleChange, handleSubmit, values }) => {
         return (
           <View style={styles.container}>
-            <View style={styles.titleContainer}>
-              <Text style={styles.titleText}>Casa Alves</Text>
-              <Text>Administración</Text>
-            </View>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Usuario"
-              value={values.user}
-              onChangeText={handleChange("user")}
-            />
-            <TextInput
-              style={styles.textInput}
-              placeholder="Constraseña"
-              secureTextEntry={true}
-              value={values.password}
-              onChangeText={handleChange("password")}
-            />
-            <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={handleSubmit}
+            <ImageBackground
+              source={image}
+              resizeMode="cover"
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                width: "100%",
+                alignItems: "center",
+                opacity: 1,
+              }}
             >
-              <Text style={styles.button}>Iniciar Sesión</Text>
-            </TouchableOpacity>
+              <MaskedView style={styles.titleContainer} maskElement={
+                
+                
+                <View style={{alignItems:"center"}}>
+                  <Text style={styles.titleText}>Casa Alves</Text>
+                  <Text style={{color: "white"}}>Administración</Text>
+                </View>
+                
+                
+                
+                
+              }
+              >
+                <LinearGradient
+                colors={["#E6C84F", "#E8807F"]}
+                style={{
+                  
+                  height: 100,
+                  width: "100%",
+                  
+                  
+                  
+                }}
+              ></LinearGradient>
+              </MaskedView>
+          
+
+              <TextInput
+                style={styles.textInput}
+                placeholder="Usuario"
+                value={values.user}
+                onChangeText={handleChange("user")}
+              />
+              <TextInput
+                style={styles.textInput}
+                placeholder="Constraseña"
+                secureTextEntry={true}
+                value={values.password}
+                onChangeText={handleChange("password")}
+              />
+              <LinearGradient
+                colors={["#E6C84F", "#E8807F"]}
+                style={{
+                  marginTop: 30,
+                  height: 40,
+                  width: "90%",
+                  borderRadius: 5,
+                  justifyContent:"center",
+                  alignItems:"center"
+                }}
+              >
+                <TouchableOpacity
+                  style={styles.buttonContainer}
+                  onPress={handleSubmit}
+                >
+                  <Text style={styles.button}>Iniciar Sesión</Text>
+                </TouchableOpacity>
+              </LinearGradient>
+            </ImageBackground>
           </View>
         );
       }}
@@ -71,32 +121,30 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    marginTop: 30,
+    flex:1,
     width: "90%",
-    backgroundColor: "#011627",
     height: 40,
     borderRadius: 5,
-    justifyContent: "center",
-    alignItems: "center",
+    alignItems:"center"
   },
 
   button: {
-    flex: 1,
+    
     color: "white",
-    textAlign: "center",
     lineHeight: 40,
+
   },
 
   titleContainer: {
-    marginBottom: 100,
-    width: "90%",
+    flex: 0.3,
+    width: "100%",
     alignItems: "center",
+    backgroundColor: "white"
   },
 
   titleText: {
     fontFamily: "serif",
     fontWeight: "bold",
     fontSize: 50,
-    color: "#011627",
   },
 });
