@@ -1,8 +1,8 @@
 import React from "react";
-import LogInPage from "./pages/Login";
+import StackNavigation from "./navigation/StackNavigation";
 
 export default function Main(){
     return(
-        <LogInPage/>
+        <StackNavigation/>
     )
 };
