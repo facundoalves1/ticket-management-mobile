@@ -146,7 +146,6 @@ const styles = StyleSheet.create({
     flex: 0.3,
     width: "100%",
     alignItems: "center",
-    backgroundColor: "white"
   },
 
   titleText: {
