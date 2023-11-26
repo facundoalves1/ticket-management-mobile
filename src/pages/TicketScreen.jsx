@@ -1,60 +1,32 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BasicForm from "../components/BasicForm";
 import { Formik } from "formik";
 import { LinearGradient } from "expo-linear-gradient";
 
 initialValues = {
-    items: [
-        {
-            quantity: 0,
-            price: 0
-        }
-    ]
-}
+  items: [
+    {
+      quantity: 0,
+      price: 0,
+    },
+  ],
+};
 
 export default function TicketScreen() {
   return (
-    <Formik
-      initialValues={initialValues}
-      onSubmit={(values) => console.log(values)}
-    >
-      {({ handleChange, handleSubmit, values }) => {
-        return (
-          <SafeAreaView style={styles.container}>
-            <View style={styles.titleContainer}>
-              <Text style={styles.titleQuantity}>Cant.</Text>
-              <Text style={styles.titleDescription}>Producto</Text>
-              <Text style={styles.titlePrice}>Precio</Text>
-            </View>
-            <View>
-              <BasicForm />
-            </View>
-            <View style={styles.buttonContainer}>
-              <Text style={styles.totalLabel}>Total:</Text>
-              <Text style={styles.total}>$0</Text>
-            <LinearGradient
-              colors={["#E6C84F", "#E8807F"]}
-              style={{
-                height: 40,
-                width: "29%",
-                borderRadius: 5,
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: 10,
-                
-              }}
-            >
-              <TouchableOpacity onPress={handleSubmit}>
-                <Text>Agregar Linea</Text>
-              </TouchableOpacity>
-            </LinearGradient>
-            </View>
-          </SafeAreaView>
-        );
-      }}
-    </Formik>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={{flex:1, height:"100%",width:"100%"}}>
+        <BasicForm />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -103,7 +75,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
     textAlignVertical: "center",
-    fontSize: 30
+    fontSize: 30,
   },
 
   total: {
@@ -112,6 +84,6 @@ const styles = StyleSheet.create({
     textAlign: "left",
     textAlignVertical: "center",
     fontSize: 30,
-    paddingLeft: 5
+    paddingLeft: 5,
   },
 });
