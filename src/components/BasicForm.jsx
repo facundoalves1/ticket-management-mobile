@@ -1,109 +1,82 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  Button
+  Button,
 } from "react-native";
 import { FieldArray, Formik } from "formik";
 import { LinearGradient } from "expo-linear-gradient";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-const initialValues = {
-  quantity: "",
-  description: "",
-  price: "",
-};
-
-export default function BasicForm() {
+export default function BasicForm({ isClicked }) {
+  console.log(isClicked)
   return (
     <Formik
-      initialValues={{ fields: [''] }}
+      initialValues={isClicked}
       onSubmit={(values) => console.log(values)}
     >
-      {({ handleChange, handleSubmit, values, setFieldValue, errors, touched }) => {
+      {({ handleChange, handleSubmit, values }) => {
         return (
           <View>
-            <View style={styles.titleContainer}>
-              <Text style={styles.titleQuantity}>Cant.</Text>
-              <Text style={styles.titleDescription}>Producto</Text>
-              <Text style={styles.titlePrice}>Precio</Text>
-            </View>
-            <FieldArray name='fields'>
-            {({push, remove})=>(
-              <View style={{flex:1, height:"100%",width:"100%"}}>
-                {values.fields.map((field, index)=>(
-                  
-            <View style={styles.inputContainer} key={index}>
-              <TextInput
-                placeholder="1"
-                value={values.quantity}
-                onChange={handleChange("quantity")}
-                style={styles.textInputQuant}
-                keyboardType="numeric"
-              />
-              <TextInput
-                placeholder="Descripción del producto"
-                value={values.description}
-                onChange={handleChange("description")}
-                style={styles.textInputDesc}
-                multiline
-              />
-              <TextInput
-                placeholder="$0"
-                value={values.price}
-                onChange={handleChange("price")}
-                style={styles.textInputPrice}
-                keyboardType="numeric"
-              />
-              {touched.fields && touched.fields[index] && errors.fields && errors.fields[index] && (
-                      <Text style={{ color: 'red' }}>{errors.fields[index]}</Text>
-                    )}
-                    <LinearGradient
-              colors={["#E6C84F", "#E8807F"]}
-              style={{
-                height: 40,
-                width: "10%",
-                borderRadius: 5,
-                justifyContent: "center",
-                alignItems: "center",
-                marginLeft: 3
-      
-              }}
-            >
-              <TouchableOpacity onPress={()=>{remove(index)}}>
-                <Text style={{fontSize:60, lineHeight:54}}>-</Text>
-              </TouchableOpacity>
-            </LinearGradient>
-            </View>
-                ))}
-            <View style={styles.buttonContainer}>
-              <Text style={styles.totalLabel}>Total:</Text>
-              <Text style={styles.total}>$0</Text>
-            <LinearGradient
-              colors={["#E6C84F", "#E8807F"]}
-              style={{
-                height: 40,
-                width: "29%",
-                borderRadius: 5,
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: 10,
-                
-              }}
-            >
-              <TouchableOpacity onPress={()=>{push('')}}>
-                <Text>Agregar Linea</Text>
-              </TouchableOpacity>
-            </LinearGradient>
-            </View>
-                
-              </View>
-            )}
-            </FieldArray>
-            </View>
+            <FieldArray
+              name="items"
+              render={(arrayHelpers) => (
+                <View>
+                  {values.items.map((field, index) => (
+                    <View style={styles.inputContainer} key={index}>
+                      <TextInput
+                        //placeholder="1"
+                        placeholder={field.key}
+                        value={values.quantity}
+                        onChange={handleChange("quantity")}
+                        style={styles.textInputQuant}
+                        keyboardType="numeric"
+                      />
+                      <TextInput
+                        //placeholder="Descripción del producto"
+                        placeholder={field.key}
+                        value={values.description}
+                        onChange={handleChange("description")}
+                        style={styles.textInputDesc}
+                        multiline
+                      />
+                      <TextInput
+                        //placeholder="$0"
+                        placeholder={field.key}
+                        value={values.price}
+                        onChange={handleChange("price")}
+                        style={styles.textInputPrice}
+                        keyboardType="numeric"
+                      />
+                      <LinearGradient
+                        colors={["#E6C84F", "#E8807F"]}
+                        style={{
+                          height: 40,
+                          width: "10%",
+                          borderRadius: 5,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          marginLeft: 3,
+                        }}
+                      >
+                        <TouchableOpacity
+                          onPress={() => {
+                            arrayHelpers.remove(index);
+                          }}
+                        >
+                          <Text style={{ fontSize: 60, lineHeight: 54 }}>
+                            -
+                          </Text>
+                        </TouchableOpacity>
+                      </LinearGradient>
+                    </View>
+                  ))}
+                </View>
+              )}
+            />
+          </View>
         );
       }}
     </Formik>
@@ -116,8 +89,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 10,
-    height:"100%",
-    width:"100%"
   },
 
   textInputQuant: {
@@ -146,39 +117,14 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  titleContainer: {
-    marginTop: 20,
-    justifyContent: "center",
-    flexDirection: "row",
-  },
-
-  titleQuantity: {
-    width: "10%",
-    color: "white",
-    marginRight:15
-    
-  },
-
-  titleDescription: {
-    width: "60%",
-    textAlign: "center",
-    color: "white",
-  },
-
-  titlePrice: {
-    width: "15%",
-    color: "white",
-    marginRight:30
-  },
-
   buttonContainer: {
-    flex: 0.1,
-    height: "100%",
+    flex:1,
+    width: "100%",
     flexDirection: "row",
     height: "100%",
     textAlign: "center",
     justifyContent: "center",
-    marginTop:10
+    position: "relative"
   },
 
   totalLabel: {
@@ -187,7 +133,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
     textAlignVertical: "center",
-    fontSize: 30
+    fontSize: 30,
   },
 
   total: {
@@ -196,6 +142,6 @@ const styles = StyleSheet.create({
     textAlign: "left",
     textAlignVertical: "center",
     fontSize: 30,
-    paddingLeft: 5
-  }
+    paddingLeft: 5,
+  },
 });
