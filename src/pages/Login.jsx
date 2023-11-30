@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Text,
   View,
@@ -13,7 +13,8 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const initialValues = {
   userid: "",
@@ -23,61 +24,55 @@ const initialValues = {
 const image = require("../../assets/background.jpg");
 
 export default function LogInPage() {
-
   const navigation = useNavigation();
 
-  const saveToken = async(token)=>{
+  const [isLoading, setLoading] = useState(false);
+  const [isError,setError] = useState('');
 
+  const saveToken = async (token) => {
     try {
-
-      await AsyncStorage.setItem('token', token);
-      
+      await AsyncStorage.setItem("token", token);
     } catch (error) {
-
-      console.log("Error token storage: ", error)
-      
+      console.log("Error token storage: ", error);
     }
-
   };
 
-  const login = async(data)=>{
-
+  const login = async (data) => {
     try {
-      
-      const response = await axios.post('https://casa-alves-management.onrender.com/api/auth/login', data , {
-  
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      })
+      setLoading(true);
+      const response = await axios.post(
+        "https://casa-alves-management.onrender.com/api/auth/login",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      if(response){
-
+      if (response) {
         await saveToken(response.data.payload.token);
         navigation.navigate("HomeScreen");
-        
       }
-
-    } catch (error) {
-
-      console.log("Authentication Error: ",error);
       
+    } catch (error) {
+      console.log("Authentication Error: ", error);
+      setError('Usuario o Contraseña incorrecta')
+    } finally {
+      setLoading(false);
     }
-
   };
 
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={async(data) => {
-      
-        await login(data)
-
+      onSubmit={async (data) => {
+        await login(data);
       }}
     >
       {({ handleChange, handleSubmit, values }) => {
         return (
-          <SafeAreaView style={{flex:1}}>
+          <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.container}>
               <ImageBackground
                 source={image}
@@ -90,30 +85,23 @@ export default function LogInPage() {
                   opacity: 1,
                 }}
               >
-                <MaskedView style={styles.titleContainer} maskElement={
-                  
-                  
-                  <View style={{alignItems:"center"}}>
-                    <Text style={styles.titleText}>Casa Alves</Text>
-                    <Text style={{color: "white"}}>Administración</Text>
-                  </View>
-                  
-                  
-                  
-                  
-                }
+                <MaskedView
+                  style={styles.titleContainer}
+                  maskElement={
+                    <View style={{ alignItems: "center" }}>
+                      <Text style={styles.titleText}>Casa Alves</Text>
+                      <Text style={{ color: "white" }}>Administración</Text>
+                    </View>
+                  }
                 >
                   <LinearGradient
-                  colors={["#E6C84F", "#E8807F"]}
-                  style={{
-                    
-                    height: 100,
-                    width: "100%",                 
-                    
-                  }}
-                ></LinearGradient>
+                    colors={["#E6C84F", "#E8807F"]}
+                    style={{
+                      height: 100,
+                      width: "100%",
+                    }}
+                  ></LinearGradient>
                 </MaskedView>
-            
 
                 <TextInput
                   style={styles.textInput}
@@ -133,8 +121,8 @@ export default function LogInPage() {
                     height: 40,
                     width: "90%",
                     borderRadius: 5,
-                    justifyContent:"center",
-                    alignItems:"center"
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
                   <TouchableOpacity
@@ -143,10 +131,13 @@ export default function LogInPage() {
                   >
                     <Text style={styles.button}>Iniciar Sesión</Text>
                   </TouchableOpacity>
-                </LinearGradient> 
+                </LinearGradient>
+                {isLoading && <LoadingSpinner isLoading={isLoading}/>}
+                {isError && <Text style={{color:'red', marginTop:10, fontWeight:'bold',fontSize:15}}>{isError}</Text>}
               </ImageBackground>
             </View>
           </SafeAreaView>
+          
         );
       }}
     </Formik>
@@ -171,18 +162,16 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    flex:1,
+    flex: 1,
     width: "90%",
     height: 40,
     borderRadius: 5,
-    alignItems:"center"
+    alignItems: "center",
   },
 
   button: {
-    
     color: "white",
     lineHeight: 40,
-
   },
 
   titleContainer: {
