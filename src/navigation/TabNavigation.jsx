@@ -2,9 +2,10 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import TicketScreen from "../pages/TicketScreen";
 import HistoryScreen from "../pages/HistoryScreen";
-import { FontAwesome5 } from "@expo/vector-icons";
+import  {FontAwesome5}  from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { View } from "react-native";
+
 
 export default function TabNavigation() {
   const Tab = createBottomTabNavigator();

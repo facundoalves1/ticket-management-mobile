@@ -5,48 +5,94 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  Button,
+  FlatList
 } from "react-native";
-import { FieldArray, Formik } from "formik";
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function BasicForm({ isClicked }) {
-  console.log(isClicked)
+export default function BasicForm({isClicked, setClicked, total, setTotal}) {
+  
+  const removeItem = (keyToRemove) => {
+    const updatedData = isClicked.filter((item) => item.key !== keyToRemove);
+    setClicked(updatedData);
+
+    let result = 0;
+
+    updatedData.map(element=>{
+
+      if(parseInt(element.price) && parseInt(element.quantity)) result += parseInt(element.price) * parseInt(element.quantity);
+
+    });
+
+    setTotal('$'+result.toString());
+    
+  };
+
+  const handleChange = (newValue,key,prop)=>{
+    
+    setClicked((data)=>{
+
+      const value = prop;
+
+      return data.map((item)=>{
+
+        if(item.key == key){
+          
+          if(value == 'quantity' && !parseInt(newValue)){
+
+            newValue = 1
+            return {...item, [value]:newValue.toString()}
+
+          }
+          return {...item, [value]:newValue}
+
+        }
+
+        return item
+
+      })
+
+    })
+
+  };
+
+  const handleTotal = ()=>{
+
+    let result = 0;
+
+    isClicked.map(element=>{
+
+      if(parseInt(element.price) && parseInt(element.quantity)) result += parseInt(element.price) * parseInt(element.quantity);
+
+    });
+
+    setTotal('$'+result.toString());
+
+  };
+
+  
   return (
-    <Formik
-      initialValues={isClicked}
-      onSubmit={(values) => console.log(values)}
-    >
-      {({ handleChange, handleSubmit, values }) => {
-        return (
-          <View>
-            <FieldArray
-              name="items"
-              render={(arrayHelpers) => (
-                <View>
-                  {values.items.map((field, index) => (
-                    <View style={styles.inputContainer} key={index}>
+    <View style={{flex:1}}>
+      <FlatList
+        data={isClicked}
+        renderItem={({item})=>(
+          <View style={styles.inputContainer}>
                       <TextInput
-                        //placeholder="1"
-                        placeholder={field.key}
-                        value={values.quantity}
-                        onChange={handleChange("quantity")}
+                        placeholder="1"
+                        onChangeText={(newValue)=>handleChange(newValue,item.key,"quantity")}
+                        onBlur={handleTotal}
                         style={styles.textInputQuant}
                         keyboardType="numeric"
                       />
                       <TextInput
-                        //placeholder="Descripción del producto"
-                        placeholder={field.key}
-                        value={values.description}
-                        onChange={handleChange("description")}
+                        placeholder='Descripción del producto'
+                        onChangeText={(newValue)=>handleChange(newValue,item.key,"name")}
                         style={styles.textInputDesc}
                         multiline
                       />
                       <TextInput
-                        //placeholder="$0"
-                        placeholder={field.key}
-                        value={values.price}
-                        onChange={handleChange("price")}
+                        placeholder="$0"
+                        onChangeText={(newValue)=>handleChange(newValue,item.key,"price")}
+                        onBlur={handleTotal}
                         style={styles.textInputPrice}
                         keyboardType="numeric"
                       />
@@ -63,7 +109,9 @@ export default function BasicForm({ isClicked }) {
                       >
                         <TouchableOpacity
                           onPress={() => {
-                            arrayHelpers.remove(index);
+                            
+                            removeItem(item.key)
+
                           }}
                         >
                           <Text style={{ fontSize: 60, lineHeight: 54 }}>
@@ -72,15 +120,11 @@ export default function BasicForm({ isClicked }) {
                         </TouchableOpacity>
                       </LinearGradient>
                     </View>
-                  ))}
-                </View>
-              )}
-            />
-          </View>
-        );
-      }}
-    </Formik>
-  );
+        )}
+      />
+    </View>     
+                 
+  )
 }
 
 const styles = StyleSheet.create({
