@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,29 +7,46 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { tickets } from "../utils/fakeTicket";
 import TicketCard from "../components/TicketCard";
+import { GET_TICKETS_BY_USERS } from "../api/ticketApi";
+import { useFocusEffect } from "@react-navigation/core";
 
-export default function HistoryScreen() {
+export default function HistoryScreen({ navigation }) {
   const [expandedCardIndex, setExpandedCardIndex] = useState(null);
-
+  const [tickets, setTickets] = useState([]);
   const toggleDetailCard = (index) => {
     setExpandedCardIndex((prevIndex) => (prevIndex === index ? null : index));
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      GET_TICKETS_BY_USERS().then((res) => setTickets(res));
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.container}>
       <View>
         <Text style={styles.title}>Historial de Tickets</Text>
-        <FlatList
-          keyExtractor={(item) => item._id.$oid}
-          data={tickets}
-           renderItem={({ item, index }) => (
-    <TouchableOpacity onPress={() => toggleDetailCard(index)}>
-      <TicketCard item={item} expanded={index === expandedCardIndex} onToggle={() => toggleDetailCard(index)} />
-    </TouchableOpacity>
-  )}
-        />
+        {tickets.length > 0 ? (
+          <FlatList
+            keyExtractor={(item) => item._id}
+            data={tickets}
+            renderItem={({ item, index }) => (
+              <TouchableOpacity onPress={() => toggleDetailCard(index)}>
+                <TicketCard
+                  item={item}
+                  tickets={tickets}
+                  setTickets={setTickets}
+                  expanded={index === expandedCardIndex}
+                  onToggle={() => toggleDetailCard(index)}
+                />
+              </TouchableOpacity>
+            )}
+          />
+        ) : (
+          <Text style={styles.item}>No hay tickets creados</Text>
+        )}
       </View>
     </SafeAreaView>
   );

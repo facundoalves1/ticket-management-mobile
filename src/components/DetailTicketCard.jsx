@@ -6,25 +6,29 @@ export default function DetailTicketCard({ details }) {
   return (
     <View style={styles.containerDetails}>
       <View style={styles.details}>
-                <Text style={styles.detailTextCenter}>Nº</Text>
-                <Text style={styles.detailText}>Producto</Text>
-                <Text style={styles.detailText}>Cantidad</Text>
-                <Text style={styles.detailText}>Monto</Text>
-              </View>
-        <FlatList
-          keyExtractor={(item) => item.id}
-          data={details}
-          renderItem={({ item }) => (
-            <>
-              <View style={styles.details}>
-                <Text style={styles.detailTextCenter}>{item.id}</Text>
-                <Text style={styles.detailText}>{item.name}</Text>
-                <Text style={styles.detailText}>{item.quantity} x $ {formatNumberWithCommas(item.price)}</Text>
-                <Text style={styles.detailText}>$ {formatNumberWithCommas(item.price * item.quantity)}</Text>
-              </View>
-            </>
-          )}
-        />
+        <Text style={styles.detailTextCenter}>Nº</Text>
+        <Text style={styles.detailText}>Producto</Text>
+        <Text style={styles.detailText}>Cantidad</Text>
+        <Text style={styles.detailText}>Monto</Text>
+      </View>
+      <FlatList
+        keyExtractor={(item, index) => index}
+        data={details}
+        renderItem={({ item, index }) => (
+          <>
+            <View style={styles.details}>
+              <Text style={styles.detailTextCenter}>{index + 1}</Text>
+              <Text style={styles.detailText}>{item.name}</Text>
+              <Text style={styles.detailText}>
+                {item.quantity} x $ {formatNumberWithCommas(item.price)}
+              </Text>
+              <Text style={styles.detailText}>
+                $ {formatNumberWithCommas(item.price * item.quantity)}
+              </Text>
+            </View>
+          </>
+        )}
+      />
     </View>
   );
 }
@@ -38,18 +42,18 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     width: "100%",
-    justifyContent: 'space-around',
-    alignItems: 'flex-start',
+    justifyContent: "space-around",
+    alignItems: "flex-start",
   },
   detailText: {
-    alignItems: 'flex-start',
-    color: 'white',
-    width: '28%'
+    alignItems: "flex-start",
+    color: "white",
+    width: "28%",
   },
   detailTextCenter: {
-    alignItems: 'center',
-    textAlign: 'center',
-    color: 'white',
-    width: '16%'
-  }
+    alignItems: "center",
+    textAlign: "center",
+    color: "white",
+    width: "16%",
+  },
 });
