@@ -1,9 +1,4 @@
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import {
   formatDateShow,
   formatNumberWithCommas,
@@ -13,73 +8,106 @@ import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import DetailTicketCard from "./DetailTicketCard";
+import { DELETE_TICKET, PRINT_TICKET } from "../api/ticketApi";
+import LoadingSpinner from "./LoadingSpinner";
 
-export default function TicketCard({item, expanded, onToggle}) {
-    const [active, setActive] = useState(expanded);
+export default function TicketCard({
+  tickets,
+  setTickets,
+  item,
+  expanded,
+  onToggle,
+}) {
+  const [active, setActive] = useState(expanded);
+  const [isLoading, setLoading] = useState(false);
 
-    useEffect(() => {
-      setActive(expanded);
-    }, [expanded]);
-  
+  useEffect(() => {
+    setActive(expanded);
+  }, [expanded]);
+
+  const handleDelete = async () => {
+    setLoading(true);
+    await DELETE_TICKET(item._id)
+      .then((res) => {
+        const ticketsFiltered = tickets.filter(
+          (ticket) => ticket._id !== item._id
+        );
+        setTickets(ticketsFiltered);
+      })
+    setLoading(false);
+  };
+  const handlePrint = async () => {
+    setLoading(true);
+    await PRINT_TICKET(item)
+    setLoading(false);
+  };
+
   return (
     <>
-    <TouchableOpacity onPress={() => onToggle(item.index)}>
-      <View style={styles.itemCard}>
-        <View style={styles.itemBox}>
-          <View style={styles.itemData}>
-            <Text style={styles.item}>
-              Fecha: {formatDateShow(item.updatedAt.$date)}
-            </Text>
-            <Text style={styles.item}>
-              Hora: {formatTime(item.updatedAt.$date)}
-            </Text>
-            <Text style={styles.item}>Artículos: {item.items.length}</Text>
-            <Text style={styles.item}>
-              Total: $ {formatNumberWithCommas(item.total)}
-            </Text>
-            <Text style={styles.item}>
-              Creado por: {item.createdByDisplayValue}
-            </Text>
+      <TouchableOpacity onPress={() => onToggle(item.index)}>
+        <View style={styles.itemCard}>
+          <View style={styles.itemBox}>
+            <View style={styles.itemData}>
+              <Text style={styles.item}>
+                Fecha: {formatDateShow(item.createdAt)}
+              </Text>
+              <Text style={styles.item}>
+                Hora: {formatTime(item.createdAt)}
+              </Text>
+              <Text style={styles.item}>Artículos: {item.items.length}</Text>
+              <Text style={styles.item}>
+                Total: $ {formatNumberWithCommas(item.total)}
+              </Text>
+              <Text style={styles.item}>Creado por: {item.user.name}</Text>
+            </View>
+            <View style={styles.itemButton}>
+              <LinearGradient
+                colors={["#E6C84F", "#E8807F"]}
+                style={{
+                  height: 50,
+                  width: 50,
+                  borderRadius: 5,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginLeft: 3,
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    handlePrint();
+                  }}
+                >
+                  <FontAwesome5 name="print" size={30} color="black" />
+                </TouchableOpacity>
+              </LinearGradient>
+              <LinearGradient
+                colors={["#E6C84F", "#E8807F"]}
+                style={{
+                  height: 50,
+                  width: 50,
+                  borderRadius: 5,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginLeft: 3,
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    handleDelete();
+                  }}
+                >
+                  <FontAwesome5 name="trash-alt" size={30} color="black" />
+                </TouchableOpacity>
+              </LinearGradient>
+            </View>
           </View>
-          <View style={styles.itemButton}>
-            <LinearGradient
-              colors={["#E6C84F", "#E8807F"]}
-              style={{
-                height: 50,
-                width: 50,
-                borderRadius: 5,
-                justifyContent: "center",
-                alignItems: "center",
-                marginLeft: 3,
-              }}
-            >
-              <TouchableOpacity onPress={() => {}}>
-                <FontAwesome5 name="print" size={30} color="black" />
-              </TouchableOpacity>
-            </LinearGradient>
-            <LinearGradient
-              colors={["#E6C84F", "#E8807F"]}
-              style={{
-                height: 50,
-                width: 50,
-                borderRadius: 5,
-                justifyContent: "center",
-                alignItems: "center",
-                marginLeft: 3,
-              }}
-            >
-              <TouchableOpacity onPress={() => {}}>
-                <FontAwesome5 name="trash-alt" size={30} color="black" />
-              </TouchableOpacity>
-            </LinearGradient>
-          </View>
+          {isLoading && <LoadingSpinner isLoading={isLoading} />}
+          {active ? <DetailTicketCard details={item.items} /> : null}
         </View>
-        {expanded ? <DetailTicketCard details={item.items} /> : null}
-      </View>
       </TouchableOpacity>
     </>
   );
-};
+}
 
 const styles = StyleSheet.create({
   itemCard: {
