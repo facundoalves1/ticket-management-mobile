@@ -26,7 +26,7 @@ export default function HistoryScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View>
+      <View style={{flex:1}}>
         <Text style={styles.title}>Historial de Tickets</Text>
         {tickets.length > 0 ? (
           <FlatList

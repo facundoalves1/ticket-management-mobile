@@ -1,32 +1,67 @@
-import React, {useEffect,useState} from "react";
-import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import LogInPage from "../pages/Login";
 import MainScreen from "../pages/MainScreen";
-import { BackHandler } from "react-native";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { View, Text, ActivityIndicator } from "react-native";
+import React, {useContext} from "react";
+import { useLogin } from "../context/LoginPorvider";
 
-export default function StackNavigation(){
+function SplashScreen() {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Obteniendo información...</Text>
+      <ActivityIndicator size="large" />
+    </View>
+  );
+}
 
-    const Stack = createStackNavigator();
+export default function StackNavigation() {
+  const Stack = createStackNavigator();
 
-        //Remove the use of the back button
-        useEffect(() => {
-            const handleBackButton = () => true;
-            BackHandler.addEventListener("hardwareBackPress", handleBackButton);
-            return () => {
-                BackHandler.removeEventListener(
-                    "hardwareBackPress",
-                    handleBackButton
-                );
-            };
-        }, []);
+  const {isLogedIn, setLogedIn} = useLogin()
+  const [isLoading,setLoading]=useState(true);
+  
+  const getUserSession = async()=>{
 
-    return(
-        <NavigationContainer>
-            <Stack.Navigator initialRouteName="Login">
-                <Stack.Screen name="Login" component={LogInPage} options={{headerShown:false}}/>
-                <Stack.Screen name="HomeScreen" component={MainScreen} options={{headerShown:false}}/>
-            </Stack.Navigator>
-        </NavigationContainer>
-    )
-};
+    try {
+      const result = await AsyncStorage.getItem("token");
+      setLogedIn(result);
+    } catch (error) {
+      console.log(error);
+    }finally{
+      setLoading(false);
+    }
+
+  }
+
+  useEffect(()=>{
+    getUserSession();
+  },[]);
+
+  if(isLoading){
+    return <SplashScreen/>
+  }
+
+  return (
+      <Stack.Navigator>
+        {isLogedIn == null ? (
+          <Stack.Screen
+            name="Login"
+            component={LogInPage}
+            options={{ 
+            headerShown: false,
+            animationTypeForReplace: isLoading ? 'pop' : 'push'
+            }}
+            initialParams={{setLogedIn}}
+          />
+        ) : (
+          <Stack.Screen
+            name="HomeScreen"
+            component={MainScreen}
+            options={{ headerShown: false }}
+          />
+        )}
+      </Stack.Navigator>
+  );
+}

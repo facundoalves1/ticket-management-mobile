@@ -62,11 +62,12 @@ export default function TicketScreen() {
       headers: {
         Authorization: `Bearer ${token}`, // Include the token in the headers
         'Content-Type': 'application/json',
-      },
-
+      }
+      })
+      .then(res=>{
+        setClicked([{ key: "1", quantity: "1", name:"", price:"" }])
+        console.log('Data successfully posted to the backend:', res.data)
       });
-
-      console.log('Data successfully posted to the backend:', response.data);
 
     } 
     catch(error){
@@ -93,6 +94,7 @@ export default function TicketScreen() {
         <Text style={styles.titleQuantity}>Cant.</Text>
         <Text style={styles.titleDescription}>Producto</Text>
         <Text style={styles.titlePrice}>Precio</Text>
+        <Text style={{width:"10%"}}></Text>
       </View>
       <BasicForm isClicked={isClicked} setClicked={setClicked} total={total} setTotal={setTotal} />
       <View style={styles.buttonContainer}>
@@ -105,7 +107,7 @@ export default function TicketScreen() {
           colors={["#E6C84F", "#E8807F"]}
           style={{
             height: "80%",
-            width: "49%",
+            width: "47%",
             borderRadius: 5,
             justifyContent: "center",
             alignItems: "center",
@@ -124,7 +126,7 @@ export default function TicketScreen() {
           colors={["#E6C84F", "#E8807F"]}
           style={{     
             height: "80%",
-            width: "49%",
+            width: "47%",
             borderRadius: 5,
             justifyContent: "center",
             alignItems: "center",
@@ -149,7 +151,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    backgroundColor: "#13182b",
+    backgroundColor: "#13182b"
   },
 
   titleContainer: {
@@ -161,19 +163,20 @@ const styles = StyleSheet.create({
   titleQuantity: {
     width: "10%",
     color: "white",
-    marginRight: 15,
+    textAlign:"center"
   },
 
   titleDescription: {
     width: "60%",
     textAlign: "center",
     color: "white",
+    textAlign:"center"
   },
 
   titlePrice: {
     width: "15%",
     color: "white",
-    marginRight: 30,
+    textAlign:"center"
   },
 
   buttonContainer: {
