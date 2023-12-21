@@ -14,7 +14,7 @@ export default function TabNavigation() {
     <Tab.Navigator
     screenOptions={{
         tabBarBackground: ()=>(
-            <View style={{flex:1}}>
+            <View>
                 <LinearGradient colors={["#E6C84F", "#E8807F"]} style={{width:'100%',height:'100%'}}></LinearGradient>
             </View>
         )

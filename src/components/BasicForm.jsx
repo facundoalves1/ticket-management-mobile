@@ -5,131 +5,116 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  FlatList
+  FlatList,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { FontAwesome5 } from "@expo/vector-icons";
 
-export default function BasicForm({isClicked, setClicked, total, setTotal}) {
-  
+export default function BasicForm({ isClicked, setClicked, total, setTotal }) {
   const removeItem = (keyToRemove) => {
     const updatedData = isClicked.filter((item) => item.key !== keyToRemove);
     setClicked(updatedData);
 
     let result = 0;
 
-    updatedData.map(element=>{
-
-      if(parseInt(element.price) && parseInt(element.quantity)) result += parseInt(element.price) * parseInt(element.quantity);
-
+    updatedData.map((element) => {
+      if (parseInt(element.price) && parseInt(element.quantity))
+        result += parseInt(element.price) * parseInt(element.quantity);
     });
 
-    setTotal('$'+result.toString());
-    
+    setTotal("$" + result.toString());
   };
 
-  const handleChange = (newValue,key,prop)=>{
-    
-    setClicked((data)=>{
-
+  const handleChange = (newValue, key, prop) => {
+    setClicked((data) => {
       const value = prop;
 
-      return data.map((item)=>{
-
-        if(item.key == key){
-          
-          if(value == 'quantity' && !parseInt(newValue)){
-
-            newValue = 1
-            return {...item, [value]:newValue.toString()}
-
+      return data.map((item) => {
+        if (item.key == key) {
+          if (value == "quantity" && !parseInt(newValue)) {
+            newValue = 1;
+            return { ...item, [value]: newValue.toString() };
           }
-          return {...item, [value]:newValue}
-
+          return { ...item, [value]: newValue };
         }
 
-        return item
-
-      })
-
-    })
-
+        return item;
+      });
+    });
   };
 
-  const handleTotal = ()=>{
-
+  const handleTotal = () => {
     let result = 0;
 
-    isClicked.map(element=>{
-
-      if(parseInt(element.price) && parseInt(element.quantity)) result += parseInt(element.price) * parseInt(element.quantity);
-
+    isClicked.map((element) => {
+      if (parseInt(element.price) && parseInt(element.quantity))
+        result += parseInt(element.price) * parseInt(element.quantity);
     });
 
-    setTotal('$'+result.toString());
-
+    setTotal("$" + result.toString());
   };
 
-  
   return (
     <View style={{flex:1}}>
       <FlatList
         data={isClicked}
-        renderItem={({item})=>(
+        renderItem={({ item }) => (
           <View style={styles.inputContainer}>
-                      <TextInput
-                        placeholder="1"
-                        onChangeText={(newValue)=>handleChange(newValue,item.key,"quantity")}
-                        onBlur={handleTotal}
-                        style={styles.textInputQuant}
-                        keyboardType="numeric"
-                      />
-                      <TextInput
-                        placeholder='Descripción del producto'
-                        onChangeText={(newValue)=>handleChange(newValue,item.key,"name")}
-                        style={styles.textInputDesc}
-                        multiline
-                      />
-                      <TextInput
-                        placeholder="$0"
-                        onChangeText={(newValue)=>handleChange(newValue,item.key,"price")}
-                        onBlur={handleTotal}
-                        style={styles.textInputPrice}
-                        keyboardType="numeric"
-                      />
-                      <LinearGradient
-                        colors={["#E6C84F", "#E8807F"]}
-                        style={{
-                          height: 40,
-                          width: "10%",
-                          borderRadius: 5,
-                          justifyContent: "center",
-                          alignItems: "center",
-                          marginLeft: 3,
-                        }}
-                      >
-                        <TouchableOpacity
-                          onPress={() => {
-                            
-                            removeItem(item.key)
-
-                          }}
-                        >
-                          <Text style={{ fontSize: 60, lineHeight: 54 }}>
-                            -
-                          </Text>
-                        </TouchableOpacity>
-                      </LinearGradient>
-                    </View>
+            <TextInput
+              placeholder="1"
+              onChangeText={(newValue) =>
+                handleChange(newValue, item.key, "quantity")
+              }
+              onBlur={handleTotal}
+              style={styles.textInputQuant}
+              keyboardType="numeric"
+            />
+            <TextInput
+              placeholder="Descripción del producto"
+              onChangeText={(newValue) =>
+                handleChange(newValue, item.key, "name")
+              }
+              style={styles.textInputDesc}
+              multiline
+            />
+            <TextInput
+              placeholder="$0"
+              onChangeText={(newValue) =>
+                handleChange(newValue, item.key, "price")
+              }
+              onBlur={handleTotal}
+              style={styles.textInputPrice}
+              keyboardType="numeric"
+            />
+            <LinearGradient
+              colors={["#E6C84F", "#E8807F"]}
+              style={{
+                height: 40,
+                width: "10%",
+                borderRadius: 5,
+                justifyContent: "center",
+                alignItems: "center",
+                marginLeft: 3,
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  removeItem(item.key);
+                }}
+              >
+                <FontAwesome5 name="times" size={26} color="black" />
+              </TouchableOpacity>
+            </LinearGradient>
+          </View>
         )}
       />
-    </View>     
-                 
-  )
+      </View>
+  );
 }
 
 const styles = StyleSheet.create({
   inputContainer: {
-    flex: 1,
+    
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 10,
@@ -162,13 +147,13 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    flex:1,
+    flex: 1,
     width: "100%",
     flexDirection: "row",
     height: "100%",
     textAlign: "center",
     justifyContent: "center",
-    position: "relative"
+    position: "relative",
   },
 
   totalLabel: {

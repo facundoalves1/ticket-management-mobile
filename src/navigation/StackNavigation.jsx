@@ -53,7 +53,6 @@ export default function StackNavigation() {
             headerShown: false,
             animationTypeForReplace: isLoading ? 'pop' : 'push'
             }}
-            initialParams={{setLogedIn}}
           />
         ) : (
           <Stack.Screen
