@@ -10,6 +10,9 @@ import { useEffect, useState } from "react";
 import DetailTicketCard from "./DetailTicketCard";
 import { DELETE_TICKET, PRINT_TICKET } from "../api/ticketApi";
 import LoadingSpinner from "./LoadingSpinner";
+import ModalPopUp from "./ModalPopUp";
+import ErrorModal from "./ErrorModal";
+import SuccessModal from "./SuccessModal";
 
 export default function TicketCard({
   tickets,
@@ -20,6 +23,9 @@ export default function TicketCard({
 }) {
   const [active, setActive] = useState(expanded);
   const [isLoading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [isError, setError] = useState(false);
 
   useEffect(() => {
     setActive(expanded);
@@ -27,19 +33,46 @@ export default function TicketCard({
 
   const handleDelete = async () => {
     setLoading(true);
-    await DELETE_TICKET(item._id)
-      .then((res) => {
+    DELETE_TICKET(item._id)
+      .then(() => {
         const ticketsFiltered = tickets.filter(
           (ticket) => ticket._id !== item._id
         );
-        setTickets(ticketsFiltered);
+        setModalMessage("Ticket eliminado exitosamente");
+        setModalVisible(true);
+        setLoading(false);
+        setTimeout(() => {
+          setTickets(ticketsFiltered);
+        }, 3000);
       })
-    setLoading(false);
+      .catch((error) => {
+        setLoading(false);
+        setModalMessage("Error al eliminar el ticket");
+        setModalVisible(true);
+        setError(true);
+      });
   };
   const handlePrint = async () => {
     setLoading(true);
-    await PRINT_TICKET(item)
-    setLoading(false);
+    PRINT_TICKET(item)
+      .then(() => {
+        setModalMessage("Ticket impreso exitosamente");
+        setModalVisible(true);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        setModalMessage("Error al imprimir el ticket");
+        setModalVisible(true);
+        setError(true);
+      });
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setTimeout(() => {
+      setError(false);
+    }, 1000);
   };
 
   return (
@@ -61,49 +94,56 @@ export default function TicketCard({
               <Text style={styles.item}>Creado por: {item.user.name}</Text>
             </View>
             <View style={styles.itemButton}>
-              <LinearGradient
-                colors={["#E6C84F", "#E8807F"]}
-                style={{
-                  height: 50,
-                  width: 50,
-                  borderRadius: 5,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginLeft: 3,
+              <TouchableOpacity
+                onPress={() => {
+                  handlePrint();
                 }}
               >
-                <TouchableOpacity
-                  onPress={() => {
-                    handlePrint();
+                <LinearGradient
+                  colors={["#E6C84F", "#E8807F"]}
+                  style={{
+                    height: 50,
+                    width: 50,
+                    borderRadius: 5,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginLeft: 3,
                   }}
                 >
                   <FontAwesome5 name="print" size={30} color="black" />
-                </TouchableOpacity>
-              </LinearGradient>
-              <LinearGradient
-                colors={["#E6C84F", "#E8807F"]}
-                style={{
-                  height: 50,
-                  width: 50,
-                  borderRadius: 5,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginLeft: 3,
+                </LinearGradient>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  handleDelete();
                 }}
               >
-                <TouchableOpacity
-                  onPress={() => {
-                    handleDelete();
+                <LinearGradient
+                  colors={["#E6C84F", "#E8807F"]}
+                  style={{
+                    height: 50,
+                    width: 50,
+                    borderRadius: 5,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginLeft: 3,
                   }}
                 >
                   <FontAwesome5 name="trash-alt" size={30} color="black" />
-                </TouchableOpacity>
-              </LinearGradient>
+                </LinearGradient>
+              </TouchableOpacity>
             </View>
           </View>
           {isLoading && <LoadingSpinner isLoading={isLoading} />}
           {active ? <DetailTicketCard details={item.items} /> : null}
         </View>
+        <ModalPopUp visible={modalVisible} onCancel={closeModal}>
+          {isError ? (
+            <ErrorModal message={modalMessage} />
+          ) : (
+            <SuccessModal message={modalMessage} />
+          )}
+        </ModalPopUp>
       </TouchableOpacity>
     </>
   );

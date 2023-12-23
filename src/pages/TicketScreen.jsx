@@ -6,9 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   LogBox,
-  Image,
-  Animated,
-  Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BasicForm from "../components/BasicForm";
@@ -17,93 +14,11 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useLogin } from "../context/LoginPorvider";
+import SuccessModal from "../components/SuccessModal";
+import ErrorModal from "../components/ErrorModal";
+import ModalPopUp from "../components/ModalPopUp";
+import { POST_TICKET } from "../api/ticketApi";
 
-const ModalPoup = ({ visible, children }) => {
-  const [showModal, setShowModal] = React.useState(visible);
-  const scaleValue = React.useRef(new Animated.Value(0)).current;
-  React.useEffect(() => {
-    toggleModal();
-  }, [visible]);
-  const toggleModal = () => {
-    if (visible) {
-      setShowModal(true);
-      Animated.spring(scaleValue, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      setTimeout(() => setShowModal(false), 200);
-      Animated.timing(scaleValue, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
-  return (
-    <Modal transparent visible={showModal}>
-      <View style={styles.modalBackGround}>
-        <Animated.View
-          style={[
-            styles.modalContainer,
-            { transform: [{ scale: scaleValue }] },
-          ]}
-        >
-          {children}
-        </Animated.View>
-      </View>
-    </Modal>
-  );
-};
-
-const SuccessModal = () => {
-  return (
-    <View>
-      <View style={{ alignItems: "center" }}>
-        <Image
-          source={require("./../../assets/success.png")}
-          style={{ height: 150, width: 150, marginVertical: 10 }}
-        />
-      </View>
-
-      <Text
-        style={{
-          marginVertical: 30,
-          fontSize: 20,
-          textAlign: "center",
-          color: "white",
-        }}
-      >
-        Ticket guardado e impreso exitosamente
-      </Text>
-    </View>
-  );
-};
-
-const ErrorModal = () => {
-  return (
-    <View>
-      <View style={{ alignItems: "center" }}>
-        <Image
-          source={require("./../../assets/cancelar.png")}
-          style={{ height: 150, width: 150, marginVertical: 10 }}
-        />
-      </View>
-
-      <Text
-        style={{
-          marginVertical: 30,
-          fontSize: 20,
-          textAlign: "center",
-          color: "white",
-        }}
-      >
-        Error al guardar o imprimir ticket
-      </Text>
-    </View>
-  );
-};
 export default function TicketScreen() {
   const [isClicked, setClicked] = useState([
     { key: "1", quantity: "1", name: "", price: "" },
@@ -111,7 +26,7 @@ export default function TicketScreen() {
   const [total, setTotal] = useState("$0");
   const [visible, setVisible] = React.useState(false);
   const [isLoading, setLoading] = useState(false);
-  const { isLogedIn, setLogedIn } = useLogin();
+  const { setLogedIn } = useLogin();
   const [isError, setError] = useState(false);
 
   useEffect(() => {
@@ -151,29 +66,15 @@ export default function TicketScreen() {
   };
 
   const submitTicket = async (data) => {
-    const token = await AsyncStorage.getItem("token");
-
     setLoading(true);
-    const response = await axios
-      .post(
-        "https://casa-alves-management.onrender.com/api/tickets/saveTicket",
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the headers
-            "Content-Type": "application/json",
-          },
-        }
-      )
+    POST_TICKET(data)
       .then((res) => {
         setClicked([]);
         setTotal("$0");
         setLoading(false);
         setVisible(true);
-        console.log("Data successfully posted to the backend:", res.data);
       })
       .catch((err) => {
-        console.log(err.response.data);
         const { message } = err.response.data;
         if (message == "PAYLOAD_DATA_NOT_FOUND") {
           AsyncStorage.removeItem("token");
@@ -192,12 +93,12 @@ export default function TicketScreen() {
     submitTicket(data);
   };
 
-  const onPessCancel = ()=>{
+  const closeModal = () => {
     setVisible(false);
     setTimeout(() => {
       setError(false);
     }, 1000);
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -207,32 +108,15 @@ export default function TicketScreen() {
         <Text style={styles.titlePrice}>Precio</Text>
         <Text style={{ width: "10%" }}></Text>
       </View>
-      <ScrollView style={{ flex: 1 }}>
         <BasicForm
           isClicked={isClicked}
           setClicked={setClicked}
           total={total}
           setTotal={setTotal}
         />
-        <ModalPoup visible={visible}>
-          <View style={{ alignItems: "center" }}>
-            <View style={styles.header}>
-              <LinearGradient
-                colors={["#E6C84F", "#E8807F"]}
-                style={{ borderRadius: 20 }}
-              >
-                <TouchableOpacity onPress={onPessCancel}>
-                  <Image
-                    source={require("./../../assets/x.png")}
-                    style={{ height: 30, width: 30 }}
-                  />
-                </TouchableOpacity>
-              </LinearGradient>
-            </View>
-          </View>
-          {!isError ? (<SuccessModal/>):(<ErrorModal/>)}
-        </ModalPoup>
-      </ScrollView>
+        <ModalPopUp visible={visible} onCancel={closeModal}>
+          {isError ? <ErrorModal message={'Error al guardar o imprimir ticket'}/> : <SuccessModal message={'Ticket guardado e impreso exitosamente'}/>}
+        </ModalPopUp>
       <View style={styles.buttonContainer}>
         <View style={styles.textContainer}>
           <Text style={styles.totalLabel}>Total:</Text>
@@ -294,7 +178,6 @@ const styles = StyleSheet.create({
   },
 
   titleContainer: {
-    //marginTop: 20,
     justifyContent: "center",
     flexDirection: "row",
   },
@@ -320,14 +203,9 @@ const styles = StyleSheet.create({
 
   buttonContainer: {
     flex: 0.2,
-    //flexDirection: "column",
-    //width: "100%",
-    //height:"10%",
     textAlign: "center",
     marginBottom: 20,
     justifyContent: "space-around",
-    //bottom:-90
-    //backgroundColor: "#13182b",
   },
 
   buttonContainer2: {
@@ -340,7 +218,6 @@ const styles = StyleSheet.create({
   },
 
   totalLabel: {
-    //width: "21%",
     color: "white",
     textAlign: "center",
     fontWeight: "bold",
@@ -349,32 +226,11 @@ const styles = StyleSheet.create({
   },
 
   total: {
-    //width: "45%",
     color: "white",
     textAlign: "left",
     fontSize: 30,
     paddingLeft: 5,
     marginTop: 10,
     marginRight: 10,
-  },
-  modalBackGround: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    width: "80%",
-    backgroundColor: "#13182b",
-    paddingHorizontal: 20,
-    paddingVertical: 30,
-    borderRadius: 20,
-    elevation: 20,
-  },
-  header: {
-    width: "100%",
-    height: 40,
-    alignItems: "flex-end",
-    justifyContent: "center",
   },
 });

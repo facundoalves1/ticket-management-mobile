@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -14,12 +14,14 @@ import { useFocusEffect } from "@react-navigation/core";
 export default function HistoryScreen({ navigation }) {
   const [expandedCardIndex, setExpandedCardIndex] = useState(null);
   const [tickets, setTickets] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const [isError, setError] = useState(false);
   const toggleDetailCard = (index) => {
     setExpandedCardIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       GET_TICKETS_BY_USERS().then((res) => setTickets(res));
     }, [])
   );
@@ -40,12 +42,14 @@ export default function HistoryScreen({ navigation }) {
                   setTickets={setTickets}
                   expanded={index === expandedCardIndex}
                   onToggle={() => toggleDetailCard(index)}
+                  setVisible={setVisible}
+                  setError={setError}
                 />
               </TouchableOpacity>
             )}
           />
         ) : (
-          <Text style={styles.item}>No hay tickets creados</Text>
+          <Text style={{...styles.item, textAlign: 'center'}}>No hay tickets creados</Text>
         )}
       </View>
     </SafeAreaView>

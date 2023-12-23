@@ -5,7 +5,7 @@ export const GET_TICKETS_BY_USERS = async () => {
     const response = await api.get("/tickets/getUserTickets");
     return response.data.payload;
   } catch (error) {
-    console.error("Error posting data:", error);
+    throw error;
   }
 };
 
@@ -14,7 +14,7 @@ export const DELETE_TICKET = async (id) => {
     const response = await api.delete(`/tickets/deleteTicket/${id}`);
     return response;
   } catch (error) {
-    console.error("Error deleting data:", error);
+    throw error;
   }
 };
 export const PRINT_TICKET = async (body) => {
@@ -22,6 +22,16 @@ export const PRINT_TICKET = async (body) => {
     const response = await api.post(`/tickets/printTicket`, body);
     return response.data.payload;
   } catch (error) {
-    console.error("Error printing data:", error.message);
+    throw error;
   }
 };
+
+export const POST_TICKET = async (ticketData) => {
+  try {
+    const response = await api.post("/tickets/saveTicket", ticketData);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
