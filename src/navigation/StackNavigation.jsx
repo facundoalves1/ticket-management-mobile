@@ -7,14 +7,14 @@ import { View, Text, ActivityIndicator } from "react-native";
 import React, {useContext} from "react";
 import { useLogin } from "../context/LoginPorvider";
 
-function SplashScreen() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Obteniendo información...</Text>
-      <ActivityIndicator size="large" />
-    </View>
-  );
-}
+// function SplashScreen() {
+//   return (
+//     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+//       <Text>Obteniendo información...</Text>
+//       <ActivityIndicator size="large" />
+//     </View>
+//   );
+// }
 
 export default function StackNavigation() {
   const Stack = createStackNavigator();
@@ -39,9 +39,9 @@ export default function StackNavigation() {
     getUserSession();
   },[]);
 
-  if(isLoading){
-    return <SplashScreen/>
-  }
+  // if(isLoading){
+  //   return <SplashScreen/>
+  // }
 
   return (
       <Stack.Navigator>

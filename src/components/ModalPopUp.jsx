@@ -11,33 +11,30 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 
 const ModalPopUp = ({ visible, children, onCancel }) => {
-  const [showModal, setShowModal] = useState(visible);
-  const scaleValue = useState(new Animated.Value(0))[0];
+  const scaleValue = new Animated.Value(0);
 
   useEffect(() => {
     toggleModal();
   }, [visible]);
-
+  
   const toggleModal = () => {
     if (visible) {
-      setShowModal(true);
       Animated.spring(scaleValue, {
         toValue: 1,
         duration: 300,
         useNativeDriver: true,
       }).start();
     } else {
-      setTimeout(() => setShowModal(false), 200);
       Animated.timing(scaleValue, {
         toValue: 0,
         duration: 300,
         useNativeDriver: true,
-      }).start();
+      }).start(() => onCancel());
     }
   };
 
   return (
-    <Modal transparent visible={showModal}>
+    <Modal transparent visible={visible}>
       <View style={styles.modalBackGround}>
         <Animated.View
           style={[
@@ -47,17 +44,17 @@ const ModalPopUp = ({ visible, children, onCancel }) => {
         >
           <View style={{ alignItems: "center" }}>
             <View style={styles.header}>
-              <LinearGradient
-                colors={["#E6C84F", "#E8807F"]}
-                style={{ borderRadius: 20 }}
-              >
-                <TouchableOpacity onPress={onCancel}>
-                  <Image
-                    source={require("./../../assets/x.png")}
-                    style={{ height: 30, width: 30 }}
-                  />
-                </TouchableOpacity>
-              </LinearGradient>
+             <LinearGradient
+  colors={["#E6C84F", "#E8807F"]}
+  style={{ borderRadius: 20, padding: 5 }}
+>
+  <TouchableOpacity onPress={onCancel}>
+    <Image
+      source={require("./../../assets/x.png")}
+      style={{ height: 30, width: 30 }}
+    />
+  </TouchableOpacity>
+</LinearGradient>
             </View>
           </View>
           {children}

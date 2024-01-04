@@ -67,7 +67,7 @@ export default function BasicForm({ isClicked, setClicked, total, setTotal }) {
               }
               onBlur={handleTotal}
               style={styles.textInputQuant}
-              keyboardType="numeric"
+              inputMode="numeric"
             />
             <TextInput
               placeholder="Descripción del producto"
@@ -84,7 +84,7 @@ export default function BasicForm({ isClicked, setClicked, total, setTotal }) {
               }
               onBlur={handleTotal}
               style={styles.textInputPrice}
-              keyboardType="numeric"
+              inputMode="numeric"
             />
             <LinearGradient
               colors={["#E6C84F", "#E8807F"]}
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     fontWeight: "bold",
-    textAlignVertical: "center",
+    verticalAlign: "center",
     fontSize: 30,
   },
 
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     width: "45%",
     color: "white",
     textAlign: "left",
-    textAlignVertical: "center",
+    verticalAlign: "center",
     fontSize: 30,
     paddingLeft: 5,
   },
