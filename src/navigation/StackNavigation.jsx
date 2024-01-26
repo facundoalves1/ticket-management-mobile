@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View, Text, ActivityIndicator } from "react-native";
 import React, {useContext} from "react";
-import { useLogin } from "../context/LoginPorvider";
+import { useLogin } from "../context/LoginProvider";
+import BarScanner from "../components/BarScanner"
 
 function SplashScreen() {
   return (
@@ -61,6 +62,11 @@ export default function StackNavigation() {
             options={{ headerShown: false }}
           />
         )}
+        <Stack.Screen
+          name="BarScanner"
+          component={BarScanner}
+          options={{headerShown: false}}
+        />
       </Stack.Navigator>
   );
 }

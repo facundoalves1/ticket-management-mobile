@@ -16,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { useLogin } from "../context/LoginPorvider";
+import { useLogin } from "../context/LoginProvider";
 
 const initialValues = {
   userid: "",
